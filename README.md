@@ -2,7 +2,6 @@
 
 ![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)
 ![Framework](https://img.shields.io/badge/Framework-Flask-black?logo=flask)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 A sophisticated web application built with Python and Flask that fetches case metadata and the latest orders from the Delhi High Court. The application features a modern UI, a powerful AI summarization tool, and two distinct versions: a user-assisted model and a fully automated model that handles the CAPTCHA seamlessly.
 
