@@ -20,7 +20,6 @@ A sophisticated web application built with Python and Flask that fetches case me
 *   **🌐 Dynamic UI:** The interface automatically scrapes and populates the "Case Type" dropdown with all available options from the court website and generates a list of years from 1951 to the present, minimizing user error.
 *   **📄 Two-Step Scraping:** Intelligently navigates from the main case results page to the detailed "Orders" page to find and list all associated PDF links and their dates.
 *   **🗄️ Database Logging:** Logs every user search query to a persistent SQLite database for tracking and analytics.
-*   **✨ Modern Frontend:** A clean, responsive, and aesthetic user interface with custom CSS and non-intrusive loading animations for a smooth and professional user experience.
 
 ---
 
@@ -106,8 +105,4 @@ python app2.py
 
 After running the command, open your web browser and navigate to **`http://127.0.0.1:5000`**.
 
----
 
-### License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
