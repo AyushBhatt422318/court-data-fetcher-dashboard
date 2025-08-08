@@ -7,15 +7,7 @@ A sophisticated web application built with Python and Flask that fetches case me
 
 ---
 
-### Live Demo & Screenshot
-
-Below is a demonstration of the application's fully automated workflow, from searching a case to generating an AI-powered summary of the latest judgment.
-
-*(This is where you should add a GIF or screenshot of your application in action. It makes a huge difference!)*
-
-`![App Demo GIF](link_to_your_demo_gif.gif)`
-
-**You can also watch the full demo video [here](link_to_your_demo_video).**
+**You can watch the full demo video here.
 
 ---
 
