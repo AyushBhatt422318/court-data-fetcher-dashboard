@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHC | Case Fetcher</title>
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a237e; /* Deep Indigo */
+            --secondary-color: #c5a15a; /* Muted Gold */
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --container-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --error-color: #c62828;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--container-bg);
+            padding: 2em 2.5em;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5em;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+        
+        .captcha-group {
+            text-align: center;
+            margin: 2em 0;
+        }
+
+        .captcha-display {
+            display: inline-block;
+            padding: 8px 25px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            letter-spacing: 8px;
+            background: linear-gradient(145deg, #fdfdfd, #e9ecef);
+            user-select: none; /* Make it unselectable */
+            font-family: 'Times New Roman', Times, serif; /* Give it a classic feel */
+        }
+
+        #submit-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 14px;
+            margin-top: 2.5em;
+            background: linear-gradient(145deg, var(--primary-color), #303f9f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.2);
+        }
+
+        #submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
+        }
+
+        #submit-btn:disabled {
+            background: #9fa8da; /* Lighter shade of primary color */
+            cursor: not-allowed;
+        }
+        
+        /* Gavel Animation */
+        #gavel-icon {
+            display: none; /* Hidden by default */
+            width: 24px;
+            height: 24px;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            100% { transform: translateX(-8px); }
+        }
+
+        #submit-btn.loading #search-icon {
+            display: inline-block;
+            animation: scan 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fa-solid fa-gavel"></i> DHC Case Search</h1>
+            <p>Enter case details to fetch the latest judgments.</p>
+        </div>
+        
+        <form id="case-form" action="/search" method="POST">
+            <input type="hidden" name="session_id" value="{{ session_id }}">
+            <input type="hidden" name="original_captcha" value="{{ captcha_text }}">
+
+            <div class="form-group">
+                <label for="case_type">Case Type</label>
+                <select id="case_type" name="case_type" required>
+                    <option value="" disabled selected>-- Select a Case Type --</option>
+                    {% for c_type in case_types %}
+                        <option value="{{ c_type }}">{{ c_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="form-group">
+                <label for="case_number">Case Number</label>
+                <input type="number" id="case_number" name="case_number" required placeholder="e.g., 1234">
+            </div>
+        
+            <div class="form-group">
+                <label for="filing_year">Year</label>
+                <select id="filing_year" name="filing_year" required>
+                    <option value="" disabled selected>-- Select a Year --</option>
+                    {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group captcha-group">
+                <label for="captcha">Enter The Code Below</label>
+                <div class="captcha-display">{{ captcha_text }}</div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="captcha" name="captcha" required placeholder="Enter CAPTCHA here">
+            </div>
+        
+            <button id="submit-btn" type="submit">
+                <span id="button-text">Search Case</span>
+                <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" style="display: none; width: 22px; height: 22px; margin-left: 10px;">
+                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('case-form').addEventListener('submit', function() {
+            const button = document.getElementById('submit-btn');
+            const buttonText = document.getElementById('button-text');
+            const searchIcon = document.getElementById('search-icon');
+            
+            // Disable button and start animation
+            button.disabled = true;
+            buttonText.textContent = 'searching (this can take several moments)...';
+            searchIcon.style.display = 'inline-block';
+            button.classList.add('loading');
+        });
+    </script>
+</body>
+</html>

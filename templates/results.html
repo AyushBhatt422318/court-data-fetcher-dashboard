@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Search Results</title>
+    <!-- Google Fonts and Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #c5a15a;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --container-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --error-color: #c62828;
+            --success-color: #2e7d32;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2em;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            background: var(--container-bg);
+            padding: 2em 2.5em;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5em;
+            margin-bottom: 1em;
+        }
+        
+        .case-details {
+            border-left: 5px solid var(--secondary-color);
+            background-color: #fafafa;
+            padding: 1.5em;
+            border-radius: 8px;
+            margin-bottom: 2em;
+        }
+        
+        .case-details p {
+            margin: 0.5em 0;
+            font-size: 1.1rem;
+        }
+
+        .case-details strong {
+            color: var(--primary-color);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        li .icon {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin-right: 20px;
+        }
+
+        li .info {
+            flex-grow: 1;
+        }
+
+        li a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+        
+        li .date {
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        
+        .summary-section {
+            margin-top: 2.5em;
+            text-align: center;
+        }
+
+        #generate-summary-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #generate-summary-btn:hover {
+            background: #1b5e20;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+        
+        #summary-container {
+            margin-top: 1.5em;
+            padding: 1.5em;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #f5f7fa;
+            text-align: left;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Allows line breaks */
+        }
+        
+        /* Loading animation for summary */
+        .loading-dots span {
+            animation-name: blink;
+            animation-duration: 1.4s;
+            animation-iteration-count: infinite;
+            animation-fill-mode: both;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: .2s; }
+        .loading-dots span:nth-child(3) { animation-delay: .4s; }
+
+        @keyframes blink {
+            0% { opacity: .2; }
+            20% { opacity: 1; }
+            100% { opacity: .2; }
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2em;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .back-link i { margin-right: 5px; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fa-solid fa-file-alt"></i> Case Search Results</h1>
+
+        {% if case_data %}
+            <div class="case-details">
+                <p><strong>Case:</strong> {{ case_data.diary_no }}</p>
+                <p><strong>Parties:</strong> {{ case_data.parties }}</p>
+            </div>
+        {% endif %}
+
+        <h2><i class="fa-solid fa-folder-open"></i> Orders and Judgments</h2>
+        {% if order_links %}
+            <ul>
+                {% for link in order_links %}
+                <li>
+                    <div class="icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="info">
+                        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.text }}</a>
+                        <div class="date">Dated: {{ link.date }}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="text-align: center;">No downloadable orders were found for this case.</p>
+        {% endif %}
+
+        <div class="summary-section">
+            <hr style="border: 0; border-top: 1px solid var(--border-color);">
+            <h2><i class="fa-solid fa-lightbulb"></i> AI-Powered Summary</h2>
+            <p>Get a summary of the latest judgment from the list above.</p>
+                    
+            {% if order_links %}
+                <button id="generate-summary-btn" data-url="{{ order_links[0].url }}">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 10px;"></i>
+                    Generate AI Summary
+                </button>
+                <div id="summary-container" style="display: none;"></div>
+            {% endif %}
+        </div>
+        
+        <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to New Search</a>
+    </div>
+
+    <script>
+        // Check if the button exists before adding listener
+        const summaryBtn = document.getElementById('generate-summary-btn');
+        if (summaryBtn) {
+            summaryBtn.addEventListener('click', function() {
+                const button = this;
+                const summaryContainer = document.getElementById('summary-container');
+                const pdfUrl = button.dataset.url;
+                let statusInterval;
+
+                // --- Real-time process text animation ---
+                const statuses = [
+                    "Downloading PDF from court server...",
+                    "Extracting text from the document...",
+                    "Connecting to the AI model...",
+                    "Analyzing judgment and identifying key points...",
+                    "Generating a concise summary...",
+                    "Almost there, finalizing the result (This may take 40-50 seconds)..."
+                ];
+                let statusIndex = 0;
+
+                const updateStatus = () => {
+                    if (statusIndex < statuses.length) {
+                        summaryContainer.innerHTML = '<i>' + statuses[statusIndex] + '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></i>';
+                        statusIndex++;
+                    }
+                };
+
+                // Initial setup and start animation
+                button.style.display = 'none'; // Hide button immediately
+                summaryContainer.style.display = 'block';
+                updateStatus();
+                statusInterval = setInterval(updateStatus, 3000); // Change status every 3 seconds
+
+                // Prepare and send request
+                const formData = new FormData();
+                formData.append('pdf_url', pdfUrl);
+
+                fetch('/summarize', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    clearInterval(statusInterval); // Stop the status updates
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.text();
+                })
+                .then(summary => {
+                    // Success: Display the final summary
+                    summaryContainer.innerHTML = summary.replace(/\n/g, '<br>');
+                })
+                .catch(error => {
+                    // Error: Display the error message
+                    clearInterval(statusInterval); // Stop status updates on error too
+                    summaryContainer.innerHTML = '<strong style="color: var(--error-color);">Error:</strong> ' + error.message;
+                });
+            });
+        }
+    </script>
+</body>
+</html>
