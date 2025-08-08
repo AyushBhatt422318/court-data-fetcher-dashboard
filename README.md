@@ -7,7 +7,7 @@ A sophisticated web application built with Python and Flask that fetches case me
 
 ---
 
-## You can watch the full demo video here.
+### You can watch the full demo video here.
 
 ---
 
